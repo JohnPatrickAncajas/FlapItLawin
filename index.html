@@ -46,15 +46,15 @@
         const canvas = document.getElementById('flappyBirdCanvas');
         const ctx = canvas.getContext('2d');
         const gravity = 0.2;
-        const flapPower = -8;
+        const flapPower = -4;
         let birdY = canvas.height / 2;
         let birdVelocity = 0;
         let birdFlap = false;
         let birdRadius = 20;
         let pipes = [];
-        let pipeWidth = 50;
-        let pipeGap = 150;
-        let pipeSpacing = 250;
+        let pipeWidth = 40;
+        let pipeGap = 200;
+        let pipeSpacing = 400;
         let score = 0;
         let gameRunning = false;
 

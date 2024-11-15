@@ -4,159 +4,168 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Telegram Mini Apps Vanilla JS Sample App</title>
+    <title>Telegram Mini App - Flappy Bird</title>
     <style>
         body {
             --bg-color: var(--tg-theme-bg-color);
             font: 12px/18px "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, Verdana, sans-serif;
             background-color: var(--bg-color);
             color: var(--tg-theme-text-color);
-            margin: 48px 24px;
+            margin: 0;
             padding: 0;
             color-scheme: var(--tg-color-scheme);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
         }
-
-        a {
-            color: var(--tg-theme-link-color);
-        }
-        #viewport {
-            position: fixed;
-            left: 0;
-            right: 0;
-            top: 0;
-            height: var(--tg-viewport-stable-height, 100vh);
-            pointer-events: none;
-            transition: all .2s ease;
-        }
-        #viewport:after {
-            content: '';
-            display: block;
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            border-width: 4px;
-            border-style: solid;
-            border-image: linear-gradient(45deg, rgba(64, 224, 208, .5), rgba(173, 255, 47, .5)) 1;
-        }
-
-        #viewport-params-size,
-        #viewport-params-expand {
-            content: attr(text);
-            position: absolute;
-            display: inline-block;
-            background: var(--tg-theme-link-color, rgb(64, 224, 208));
-            right: 4px;
-            left: auto;
-            font-size: 8px;
-            padding: 4px;
-            vertical-align: top;
-        }
-        #viewport-params-size {
-            top: 4px;
-        }
-        #viewport-params-expand {
-            top: 30px;
+        canvas {
+            border: 1px solid black;
+            background-color: #70c5ce;
         }
     </style>
 </head>
 
 <body>
-    <main>
-        <div align="center">
-            <a href="https://ton.org/"><img width="48" src="./assets/tapps.png" alt="logo of telegram web apps"></a>
-        </div>
-        <h1>Modals</h1>
-        <button onclick="Telegram.WebApp.showAlert('Hello World!');">Launch Alert</button>
-        <button onclick="showPopup();">Launch Popup</button>
+    <canvas id="flappyBirdCanvas" width="320" height="480"></canvas>
 
-        <h1>Links</h1>
-        <ul>
-            <li>
-                <a href="javascript:Telegram.WebApp.openTelegramLink('https://t.me/trendingapps');">Open link within Telegram</a>
-            </li>
-            <li>
-                <a href="javascript:Telegram.WebApp.openLink('https://ton.org/');">Open link in external browser</a>
-            </li>
-            <li>
-                <a href="javascript:Telegram.WebApp.openLink('https://telegra.ph/api',{try_instant_view:true});">Open link inside Telegram webview</a>
-            </li>
-        </ul>
-
-        <h1>Buttons</h1>
-        <button onclick="Telegram.WebApp.expand();">Expand Webview</button>
-        <button onclick="toggleMainButton();">Toggle Main Button</button>
-    </main>
-    <div id="viewport"></div>
-    <div id="viewport-params-size"></div>
-    <div id="viewport-params-expand"></div>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
-        // Init TWA
+        // Initialize Telegram Web App
         Telegram.WebApp.ready();
-
-        // Event occurs whenever theme settings are changed in the user's Telegram app (including switching to night mode).
-        Telegram.WebApp.onEvent('themeChanged', function() {
-            document.documentElement.className = Telegram.WebApp.colorScheme;
-        });
-
-        // Show main button
         Telegram.WebApp.MainButton.setParams({
-            text: 'Main Button'
+            text: 'Start Game'
         });
         Telegram.WebApp.MainButton.onClick(function () {
-            Telegram.WebApp.showAlert('Main Button was clicked')
-        });	
+            startGame();  // Start the game when the main button is clicked
+        });
         Telegram.WebApp.MainButton.show();
 
-        // Function to call showPopup API
-        function showPopup() {
-            Telegram.WebApp.showPopup({
-                title: 'Title',
-                message: 'Some message',
-                buttons: [
-                    {id: 'link', type: 'default', text: 'Open ton.org'},
-                    {type: 'cancel'},
-                ]
-            }, function(btn) {
-                if (btn === 'link') {
-                    Telegram.WebApp.openLink('https://ton.org/');
-                }
-            });
-        };
+        // Game Variables
+        const canvas = document.getElementById('flappyBirdCanvas');
+        const ctx = canvas.getContext('2d');
+        const gravity = 0.6;
+        const flapPower = -12;
+        let birdY = canvas.height / 2;
+        let birdVelocity = 0;
+        let birdFlap = false;
+        let birdRadius = 20;
+        let pipes = [];
+        let pipeWidth = 50;
+        let pipeGap = 150;
+        let pipeSpacing = 200;
+        let score = 0;
+        let gameRunning = false;
 
-        // Function to toggle main TWA button
-        function toggleMainButton() {
-            if (Telegram.WebApp.MainButton.isVisible) {
-                Telegram.WebApp.MainButton.hide();
-            } else {
-                Telegram.WebApp.MainButton.show();
+        // Bird Object
+        const bird = {
+            x: 50,
+            y: birdY,
+            width: 20,
+            height: 20,
+            draw: function() {
+                ctx.fillStyle = "#FFD700";  // Bird color
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, birdRadius, 0, Math.PI * 2);
+                ctx.fill();
+            },
+            update: function() {
+                if (birdFlap) {
+                    birdVelocity = flapPower;
+                    birdFlap = false;
+                }
+                birdVelocity += gravity;
+                this.y += birdVelocity;
+
+                // Prevent the bird from falling off screen
+                if (this.y + birdRadius > canvas.height) {
+                    this.y = canvas.height - birdRadius;
+                    birdVelocity = 0;
+                }
+                if (this.y - birdRadius < 0) {
+                    this.y = birdRadius;
+                    birdVelocity = 0;
+                }
             }
         };
 
-        function setViewportData() {
-            var sizeEl = document.getElementById('viewport-params-size');
-            sizeEl.innerText = 'width: ' + window.innerWidth + ' x ' + 
-                'height: ' + Telegram.WebApp.viewportStableHeight;
-
-            var expandEl = document.querySelector('#viewport-params-expand');
-            expandEl.innerText = 'Is Expanded: ' + (Telegram.WebApp.isExpanded ? 'true' : 'false');
+        // Pipe Object
+        function Pipe(x) {
+            this.x = x;
+            this.height = Math.floor(Math.random() * (canvas.height - pipeGap)) + 50;
+            this.width = pipeWidth;
+            this.draw = function() {
+                ctx.fillStyle = "#228B22";  // Pipe color
+                ctx.fillRect(this.x, 0, this.width, this.height);
+                ctx.fillRect(this.x, this.height + pipeGap, this.width, canvas.height - this.height - pipeGap);
+            };
+            this.update = function() {
+                this.x -= 2;  // Move pipe left
+                if (this.x + this.width < 0) {
+                    pipes.shift();
+                    score++;
+                }
+            };
         }
 
-        Telegram.WebApp.setHeaderColor('secondary_bg_color');
-
-        setViewportData();
-        Telegram.WebApp.onEvent('viewportChanged', setViewportData);
-
-        Telegram.WebApp.onEvent('themeChanged', function() {
-            document.body.setAttribute('style', '--bg-color:' + Telegram.WebApp.backgroundColor);
+        // Handle Flap
+        document.addEventListener('click', function() {
+            if (!gameRunning) return;
+            birdFlap = true;
         });
 
-    </script>
+        // Start the game
+        function startGame() {
+            gameRunning = true;
+            bird.y = canvas.height / 2;
+            birdVelocity = 0;
+            score = 0;
+            pipes = [];
+            requestAnimationFrame(gameLoop);
+        }
 
-    <!-- Eruda is console for mobile browsers -->
-    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-    <script>eruda.init();</script>
+        // Game Loop
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            bird.update();
+            bird.draw();
+
+            if (pipes.length === 0 || pipes[pipes.length - 1].x < canvas.width - pipeSpacing) {
+                pipes.push(new Pipe(canvas.width));
+            }
+
+            pipes.forEach(pipe => {
+                pipe.update();
+                pipe.draw();
+                if (pipe.x < bird.x + birdRadius && pipe.x + pipeWidth > bird.x - birdRadius) {
+                    if (bird.y - birdRadius < pipe.height || bird.y + birdRadius > pipe.height + pipeGap) {
+                        gameOver();
+                    }
+                }
+            });
+
+            ctx.fillStyle = "#000";
+            ctx.font = "20px Arial";
+            ctx.fillText("Score: " + score, 10, 30);
+
+            if (gameRunning) {
+                requestAnimationFrame(gameLoop);
+            }
+        }
+
+        // Game Over
+        function gameOver() {
+            gameRunning = false;
+            Telegram.WebApp.MainButton.setParams({
+                text: 'Restart Game'
+            });
+            Telegram.WebApp.MainButton.onClick(function () {
+                startGame();  // Restart the game
+            });
+            Telegram.WebApp.MainButton.show();
+        }
+
+    </script>
 </body>
 </html>

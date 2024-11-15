@@ -45,8 +45,8 @@
         // Game Variables
         const canvas = document.getElementById('flappyBirdCanvas');
         const ctx = canvas.getContext('2d');
-        const gravity = 0.2;
-        const flapPower = -4;
+        const gravity = 0.4;
+        const flapPower = -8;
         let birdY = canvas.height / 2;
         let birdVelocity = 0;
         let birdFlap = false;
@@ -54,7 +54,7 @@
         let pipes = [];
         let pipeWidth = 40;
         let pipeGap = 200;
-        let pipeSpacing = 400;
+        let pipeSpacing = 250;
         let score = 0;
         let gameRunning = false;
 

@@ -22,7 +22,6 @@
         }
         canvas {
             border: 1px solid black;
-            background-color: #70c5ce;
         }
         #menu {
             display: flex;
@@ -56,11 +55,15 @@
         const startButton = document.getElementById('startButton');
         const shopButton = document.getElementById('shopButton');
         const menu = document.getElementById('menu');
-        const gravity = 0.4;
-        const flapPower = -8;
+
         const birdImg = new Image();
         birdImg.src = 'bird.jpg';
 
+        const backgroundImg = new Image();
+        backgroundImg.src = 'background.png';
+
+        const gravity = 0.4;
+        const flapPower = -8;
         let birdY = canvas.height / 2;
         let birdVelocity = 0;
         let birdFlap = false;
@@ -147,7 +150,8 @@
         function gameLoop() {
             if (!gameRunning) return;
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(backgroundImg, 0, 0, canvas.width, canvas.height);
+
             bird.update();
             bird.draw();
 

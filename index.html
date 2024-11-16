@@ -63,15 +63,15 @@
 <body>
     <div id="menu">
         <h1>Flap It</h1>
-        <h2 id="totalScoreDisplay">Total Score: 0</h2>
+        <h2 id="totalScoreDisplay">Coins: 0</h2>
         <button id="startButton">Start Game</button>
         <button id="shopButton">Shop</button>
     </div>
     <div id="shopMenu">
         <h1>Shop</h1>
-        <div class="shop-item" id="bird1" onclick="buyCharacter(1)">Character 1 (100 points)</div>
-        <div class="shop-item" id="bird2" onclick="buyCharacter(2)">Character 2 (200 points)</div>
-        <div class="shop-item" id="bird3" onclick="buyCharacter(3)">Character 3 (300 points)</div>
+        <div class="shop-item" id="bird1" onclick="buyCharacter(1)">Character 1 (100 coins)</div>
+        <div class="shop-item" id="bird2" onclick="buyCharacter(2)">Character 2 (200 coins)</div>
+        <div class="shop-item" id="bird3" onclick="buyCharacter(3)">Character 3 (300 coins)</div>
         <button onclick="closeShop()">Close Shop</button>
     </div>
     <canvas id="FlapItLawinCanvas" width="320" height="480" style="display: none;"></canvas>
@@ -100,10 +100,11 @@
         let pipeGap = 200;
         let pipeSpacing = 250;
         let score = 0;
-        let totalScore = parseInt(localStorage.getItem('totalScore')) || 0;
+        let coins = parseInt(localStorage.getItem('coins')) || 0;
         let gameRunning = false;
         let availableBirds = JSON.parse(localStorage.getItem('availableBirds')) || { 1: false, 2: false, 3: false };
-        totalScoreDisplay.textContent = "Total Score: " + totalScore;
+
+        totalScoreDisplay.textContent = "Coins: " + coins;
 
         const bird = {
             x: 50,
@@ -145,6 +146,7 @@
                 if (this.x + this.width < 0) {
                     pipes.shift();
                     score++;
+                    coins++;
                     gameSpeed += 0.1;
                     pipeGap = Math.max(100, pipeGap - 5);
                 }
@@ -171,6 +173,7 @@
             bird.y = canvas.height / 2;
             birdVelocity = 0;
             score = 0;
+            coins = parseInt(localStorage.getItem('coins')) || coins;
             gameSpeed = 2;
             pipeGap = 200;
             pipes = [];
@@ -200,16 +203,15 @@
 
             ctx.fillStyle = "#000";
             ctx.font = "20px Arial";
-            ctx.fillText("Score: " + score, 10, 30);
+            ctx.fillText("Coins: " + coins, 10, 30);
 
             requestAnimationFrame(gameLoop);
         }
 
         function gameOver() {
             gameRunning = false;
-            totalScore += score;
-            localStorage.setItem('totalScore', totalScore);
-            totalScoreDisplay.textContent = "Total Score: " + totalScore;
+            localStorage.setItem('coins', coins);
+            totalScoreDisplay.textContent = "Coins: " + coins;
             menu.style.display = 'flex';
             canvas.style.display = 'none';
             startButton.textContent = 'Restart Game';
@@ -234,25 +236,26 @@
                     item.textContent = 'Character ' + i + ' (Already owned)';
                 } else {
                     item.classList.remove('disabled');
-                    item.textContent = 'Character ' + i + ' (' + (i * 100) + ' points)';
+                    item.textContent = 'Character ' + i + ' (' + (i * 100) + ' coins)';
                 }
             }
         }
 
         function buyCharacter(characterId) {
             const price = characterId * 100;
-            if (totalScore >= price && !availableBirds[characterId]) {
-                totalScore -= price;
+            if (coins >= price && !availableBirds[characterId]) {
                 availableBirds[characterId] = true;
-                localStorage.setItem('totalScore', totalScore);
+                coins -= price;
+                localStorage.setItem('coins', coins);
                 localStorage.setItem('availableBirds', JSON.stringify(availableBirds));
                 updateShop();
             } else {
-                alert("You don't have enough points or this character is already owned.");
+   (             alert(")You don't have enough points or this character is already owned.");0
+                
+            }
             }
         }
 
-        // Commented out character switching functions
         // function switchCharacter() {
         //     if (availableBirds[1]) {
         //         birdImg.src = 'bird1.png';

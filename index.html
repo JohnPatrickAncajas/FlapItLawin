@@ -29,6 +29,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            position: absolute;
         }
         #menu button {
             padding: 10px 20px;
@@ -41,21 +42,35 @@
             font-size: 16px;
             color: var(--tg-theme-hint-color);
         }
-        #shopMenu {
+        #shopMenu, #questMenu {
             display: none;
             flex-direction: column;
             align-items: center;
         }
-        .shop-item {
+        .shop-item, .quest-item {
             margin: 5px;
             padding: 10px;
             background-color: #fff;
             border: 1px solid #000;
             cursor: pointer;
+            width: 200px;
+            text-align: center;
         }
-        .shop-item.disabled {
+        .shop-item.disabled, .quest-item.disabled {
             background-color: #ccc;
             cursor: not-allowed;
+        }
+        #questMenu {
+            position: absolute;
+            left: 10px;
+            top: 20px;
+            width: 200px;
+        }
+        #shopMenu {
+            position: absolute;
+            top: 20px;
+            right: 10px;
+            width: 200px;
         }
     </style>
 </head>
@@ -66,6 +81,7 @@
         <h2 id="totalScoreDisplay">Coins: 0</h2>
         <button id="startButton">Start Game</button>
         <button id="shopButton">Shop</button>
+        <button id="questButton">Quest</button>
     </div>
     <div id="shopMenu">
         <h1>Shop</h1>
@@ -73,6 +89,13 @@
         <div class="shop-item" id="bird2" onclick="buyCharacter(2)">Character 2 (200 coins)</div>
         <div class="shop-item" id="bird3" onclick="buyCharacter(3)">Character 3 (300 coins)</div>
         <button onclick="closeShop()">Close Shop</button>
+    </div>
+    <div id="questMenu">
+        <h1>Quest</h1>
+        <div class="quest-item" id="quest1" onclick="completeQuest(1)">Complete Quest 1 (50 coins)</div>
+        <div class="quest-item" id="quest2" onclick="completeQuest(2)">Complete Quest 2 (100 coins)</div>
+        <div class="quest-item" id="quest3" onclick="completeQuest(3)">Complete Quest 3 (150 coins)</div>
+        <button onclick="closeQuest()">Close Quest</button>
     </div>
     <canvas id="FlapItLawinCanvas" width="320" height="480" style="display: none;"></canvas>
 
@@ -84,8 +107,10 @@
         const ctx = canvas.getContext('2d');
         const startButton = document.getElementById('startButton');
         const shopButton = document.getElementById('shopButton');
+        const questButton = document.getElementById('questButton');
         const menu = document.getElementById('menu');
         const shopMenu = document.getElementById('shopMenu');
+        const questMenu = document.getElementById('questMenu');
         const totalScoreDisplay = document.getElementById('totalScoreDisplay');
         const gravity = 0.4;
         const flapPower = -8;
@@ -168,6 +193,10 @@
             openShop();
         });
 
+        questButton.addEventListener('click', () => {
+            openQuest();
+        });
+
         function startGame() {
             gameRunning = true;
             bird.y = canvas.height / 2;
@@ -218,25 +247,22 @@
         }
 
         function openShop() {
-            menu.style.display = 'none';
             shopMenu.style.display = 'flex';
             updateShop();
         }
 
         function closeShop() {
             shopMenu.style.display = 'none';
-            menu.style.display = 'flex';
         }
 
         function updateShop() {
             for (let i = 1; i <= 3; i++) {
-                const item = document.getElementById('bird' + i);
+                const shopItem = document.getElementById('bird' + i);
                 if (availableBirds[i]) {
-                    item.classList.add('disabled');
-                    item.textContent = 'Character ' + i + ' (Already owned)';
+                    shopItem.classList.add('disabled');
+                    shopItem.innerHTML = `Character ${i} (Bought)`;
                 } else {
-                    item.classList.remove('disabled');
-                    item.textContent = 'Character ' + i + ' (' + (i * 100) + ' coins)';
+                    shopItem.classList.remove('disabled');
                 }
             }
         }
@@ -249,24 +275,34 @@
                 localStorage.setItem('coins', coins);
                 localStorage.setItem('availableBirds', JSON.stringify(availableBirds));
                 updateShop();
-            } else {
-                alert("You don't have enough points or this character is already owned.");
-                
             }
         }
 
-        // function switchCharacter() {
-        //     if (availableBirds[1]) {
-        //         birdImg.src = 'bird1.png';
-        //     }
-        //     if (availableBirds[2]) {
-        //         birdImg.src = 'bird2.png';
-        //     }
-        //     if (availableBirds[3]) {
-        //         birdImg.src = 'bird3.png';
-        //     }
-        // }
-        // window.addEventListener('load', switchCharacter);
+        function openQuest() {
+            questMenu.style.display = 'flex';
+        }
+
+        function closeQuest() {
+            questMenu.style.display = 'none';
+        }
+
+        function completeQuest(questId) {
+            let reward = 0;
+            switch (questId) {
+                case 1:
+                    reward = 50;
+                    break;
+                case 2:
+                    reward = 100;
+                    break;
+                case 3:
+                    reward = 150;
+                    break;
+            }
+            coins += reward;
+            localStorage.setItem('coins', coins);
+            alert(`Quest ${questId} completed! You earned ${reward} coins.`);
+        }
     </script>
 </body>
 </html>

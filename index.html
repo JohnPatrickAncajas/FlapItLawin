@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Telegram Mini App - Flap It</title>
+    <title>Telegram Mini App - Flap It!</title>
     <style>
         body {
             --bg-color: var(--tg-theme-bg-color);
@@ -22,139 +22,141 @@
         }
         canvas {
             border: 1px solid black;
-        }
-        #menu {
-            position: absolute;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 2;
-        }
-        #menu button {
-            padding: 10px 20px;
-            margin: 10px;
-            font-size: 18px;
-            cursor: pointer;
-        }
-        #shopOverlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 3;
-        }
-        #shopOverlay button {
-            padding: 10px 20px;
-            font-size: 18px;
-            margin-top: 20px;
-            cursor: pointer;
+            background-color: #70c5ce;
         }
     </style>
 </head>
 
 <body>
-    <div id="menu">
-        <h1>Flap It</h1>
-        <button id="startButton">Start Game</button>
-        <button id="shopButton">Shop</button>
-    </div>
-    <div id="shopOverlay">
-        <h1>Shop</h1>
-        <p>Shop content will go here...</p>
-        <button id="closeShopButton">Close</button>
-    </div>
-    <canvas id="FlapItLawinCanvas" width="320" height="480"></canvas>
+    <canvas id="FlapItCanvas" width="320" height="480"></canvas>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         Telegram.WebApp.ready();
+        Telegram.WebApp.MainButton.setParams({
+            text: 'Start Game'
+        });
+        Telegram.WebApp.MainButton.onClick(function () {
+            startGame();
+        });
+        Telegram.WebApp.MainButton.show();
 
-        const canvas = document.getElementById('FlapItLawinCanvas');
+        const canvas = document.getElementById('FlapItCanvas');
         const ctx = canvas.getContext('2d');
-        const startButton = document.getElementById('startButton');
-        const shopButton = document.getElementById('shopButton');
-        const closeShopButton = document.getElementById('closeShopButton');
-        const shopOverlay = document.getElementById('shopOverlay');
-        const menu = document.getElementById('menu');
-
-        // Assets
-        const birdImg = new Image();
-        birdImg.src = 'bird.jpg';
-
-        const backgroundImg = new Image();
-        backgroundImg.src = 'background.png';
-
+        const gravity = 0.6;
+        const flapPower = -12;
         let birdY = canvas.height / 2;
-        let birdVelocity = 1;
+        let birdVelocity = 0;
+        let birdFlap = false;
+        let birdRadius = 20;
+        let pipes = [];
+        let pipeWidth = 50;
+        let pipeGap = 150;
+        let pipeSpacing = 200;
+        let score = 0;
         let gameRunning = false;
 
         const bird = {
             x: 50,
             y: birdY,
+            width: 20,
+            height: 20,
             draw: function() {
-                ctx.drawImage(birdImg, this.x - 20, this.y - 20, 40, 40);
+                ctx.fillStyle = "#FFD700";
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, birdRadius, 0, Math.PI * 2);
+                ctx.fill();
             },
             update: function() {
+                if (birdFlap) {
+                    birdVelocity = flapPower;
+                    birdFlap = false;
+                }
+                birdVelocity += gravity;
                 this.y += birdVelocity;
-                if (this.y >= canvas.height - 20 || this.y <= 20) {
-                    birdVelocity *= -1;
+
+                if (this.y + birdRadius > canvas.height) {
+                    this.y = canvas.height - birdRadius;
+                    birdVelocity = 0;
+                }
+                if (this.y - birdRadius < 0) {
+                    this.y = birdRadius;
+                    birdVelocity = 0;
                 }
             }
         };
 
-        startButton.addEventListener('click', () => {
-            menu.style.display = 'none';
-            canvas.style.display = 'block';
-            shopOverlay.style.display = 'none';
-            startGame();
-        });
-
-        shopButton.addEventListener('click', () => {
-            shopOverlay.style.display = 'flex';
-        });
-
-        closeShopButton.addEventListener('click', () => {
-            shopOverlay.style.display = 'none';
-        });
-
-        function drawMenuBackground() {
-            ctx.drawImage(backgroundImg, 0, 0, canvas.width, canvas.height);
-            bird.update();
-            bird.draw();
+        function Pipe(x) {
+            this.x = x;
+            this.height = Math.floor(Math.random() * (canvas.height - pipeGap)) + 50;
+            this.width = pipeWidth;
+            this.draw = function() {
+                ctx.fillStyle = "#228B22";
+                ctx.fillRect(this.x, 0, this.width, this.height);
+                ctx.fillRect(this.x, this.height + pipeGap, this.width, canvas.height - this.height - pipeGap);
+            };
+            this.update = function() {
+                this.x -= 2;
+                if (this.x + this.width < 0) {
+                    pipes.shift();
+                    score++;
+                }
+            };
         }
+
+        document.addEventListener('click', function() {
+            if (!gameRunning) return;
+            birdFlap = true;
+        });
 
         function startGame() {
             gameRunning = true;
-            gameLoop();
-        }
-
-        function gameLoop() {
-            if (!gameRunning) return;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            ctx.drawImage(backgroundImg, 0, 0, canvas.width, canvas.height);
-            bird.update();
-            bird.draw();
-
+            bird.y = canvas.height / 2;
+            birdVelocity = 0;
+            score = 0;
+            pipes = [];
             requestAnimationFrame(gameLoop);
         }
 
-        function menuAnimation() {
+        function gameLoop() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawMenuBackground();
-            if (!gameRunning) requestAnimationFrame(menuAnimation);
+            bird.update();
+            bird.draw();
+
+            if (pipes.length === 0 || pipes[pipes.length - 1].x < canvas.width - pipeSpacing) {
+                pipes.push(new Pipe(canvas.width));
+            }
+
+            pipes.forEach(pipe => {
+                pipe.update();
+                pipe.draw();
+                if (pipe.x < bird.x + birdRadius && pipe.x + pipeWidth > bird.x - birdRadius) {
+                    if (bird.y - birdRadius < pipe.height || bird.y + birdRadius > pipe.height + pipeGap) {
+                        gameOver();
+                    }
+                }
+            });
+
+            ctx.fillStyle = "#000";
+            ctx.font = "20px Arial";
+            ctx.fillText("Score: " + score, 10, 30);
+
+            if (gameRunning) {
+                requestAnimationFrame(gameLoop);
+            }
         }
 
-        menuAnimation();
+        function gameOver() {
+            gameRunning = false;
+            Telegram.WebApp.MainButton.setParams({
+                text: 'Restart Game'
+            });
+            Telegram.WebApp.MainButton.onClick(function () {
+                startGame();
+            });
+            Telegram.WebApp.MainButton.show();
+        }
+
     </script>
 </body>
 </html>

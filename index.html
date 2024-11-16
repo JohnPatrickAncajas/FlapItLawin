@@ -77,8 +77,10 @@
         let pipeGap = 200;
         let pipeSpacing = 250;
         let score = 0;
-        let totalScore = 0;
+        let totalScore = parseInt(localStorage.getItem('totalScore')) || 0;
         let gameRunning = false;
+
+        totalScoreDisplay.textContent = "Total Score: " + totalScore;
 
         const bird = {
             x: 50,
@@ -183,6 +185,7 @@
         function gameOver() {
             gameRunning = false;
             totalScore += score;
+            localStorage.setItem('totalScore', totalScore);
             totalScoreDisplay.textContent = "Total Score: " + totalScore;
             menu.style.display = 'flex';
             canvas.style.display = 'none';

@@ -23,7 +23,7 @@
 
     canvas {
         border: 0.0625rem solid black;
-        background-color: #a67854;
+        background-color: #ADD8E6;
     }
 
     #menu {
@@ -185,7 +185,7 @@
             this.height = Math.floor(Math.random() * (canvas.height - pipeGap)) + 50;
             this.width = pipeWidth;
             this.draw = function() {
-                ctx.fillStyle = "#228B22";
+                ctx.fillStyle = "#8B4513";
                 ctx.fillRect(this.x, 0, this.width, this.height);
                 ctx.fillRect(this.x, this.height + pipeGap, this.width, canvas.height - this.height - pipeGap);
             };
@@ -201,6 +201,7 @@
                 }
             };
         }
+
 
         document.addEventListener('click', function() {
             if (!gameRunning) return;

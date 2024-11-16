@@ -179,15 +179,16 @@
                 }
             }
         };
+        let cliffImg = new Image();
+        cliffImg.src = 'cliffs.png';
 
         function Pipe(x) {
             this.x = x;
             this.height = Math.floor(Math.random() * (canvas.height - pipeGap)) + 50;
             this.width = pipeWidth;
             this.draw = function() {
-                ctx.fillStyle = "#8B4513";
-                ctx.fillRect(this.x, 0, this.width, this.height);
-                ctx.fillRect(this.x, this.height + pipeGap, this.width, canvas.height - this.height - pipeGap);
+                ctx.drawImage(cliffImg, this.x, 0, this.width, this.height);
+                ctx.drawImage(cliffImg, this.x, this.height + pipeGap, this.width, canvas.height - this.height - pipeGap);
             };
             this.update = function() {
                 this.x -= 2;
@@ -201,6 +202,7 @@
                 }
             };
         }
+
 
 
         document.addEventListener('click', function() {

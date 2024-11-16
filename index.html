@@ -9,18 +9,15 @@
         body {
             --bg-color: var(--tg-theme-bg-color);
             font: 12px/18px "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--tg-theme-text-color);
             margin: 0;
             padding: 0;
-            color-scheme: var(--tg-color-scheme);
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             overflow: hidden;
-            background-image: linear-gradient(to bottom, #70c5ce, #ffffff);
             background-size: cover;
+            background-repeat: no-repeat;
         }
 
         canvas {
@@ -48,6 +45,7 @@
 
         const canvas = document.getElementById('FlapItCanvas');
         const ctx = canvas.getContext('2d');
+
         const gravity = 0.6;
         const flapPower = -12;
         let birdY = canvas.height / 2;
@@ -61,16 +59,16 @@
         let score = 0;
         let gameRunning = false;
 
+        let birdImage = new Image();
+        let backgroundImage = new Image();
+        birdImage.src = "bird.png";
+        backgroundImage.src = "background.png";
+
         const bird = {
             x: 50,
             y: birdY,
-            width: 20,
-            height: 20,
             draw: function() {
-                ctx.fillStyle = "#FFD700";
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, birdRadius, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.drawImage(birdImage, this.x - birdRadius, this.y - birdRadius, birdRadius * 2, birdRadius * 2);
             },
             update: function() {
                 if (birdFlap) {
@@ -100,7 +98,7 @@
                 ctx.fillRect(this.x, 0, this.width, this.height);
                 ctx.fillRect(this.x, this.height + pipeGap, this.width, canvas.height - this.height - pipeGap);
             };
-            this.update = function() {
+            this.update: function() {
                 this.x -= 2;
                 if (this.x + this.width < 0) {
                     pipes.shift();
@@ -125,6 +123,9 @@
 
         function gameLoop() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+
             bird.update();
             bird.draw();
 
@@ -162,6 +163,13 @@
             Telegram.WebApp.MainButton.show();
         }
 
+        function setSrc(type, src) {
+            if (type === 'bird') {
+                birdImage.src = src;
+            } else if (type === 'background') {
+                backgroundImage.src = src;
+            }
+        }
     </script>
 </body>
 </html>

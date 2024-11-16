@@ -6,82 +6,96 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>Telegram Mini App - Flap It</title>
     <style>
-        body {
-            --bg-color: var(--tg-theme-bg-color);
-            font: 12px/18px "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--tg-theme-text-color);
-            margin: 0;
-            padding: 0;
-            color-scheme: var(--tg-color-scheme);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-        }
-        canvas {
-            border: 1px solid black;
-            background-color: #70c5ce;
-        }
-        #menu {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: absolute;
-        }
-        #menu button {
-            padding: 10px 20px;
-            margin: 10px;
-            font-size: 18px;
-            cursor: pointer;
-        }
-        #menu h2 {
-            margin-top: 10px;
-            font-size: 16px;
-            color: var(--tg-theme-hint-color);
-        }
-        #shopMenu, #questMenu {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-        }
-        .shop-item, .quest-item {
-            margin: 5px;
-            padding: 10px;
-            background-color: #fff;
-            border: 1px solid #000;
-            cursor: pointer;
-            width: 200px;
-            text-align: center;
-        }
-        .shop-item.disabled, .quest-item.disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-        #shopMenu, #questMenu {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            background-color: #f0f0f0;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            position: absolute;
-            left: auto;
-            right: auto;
-            width: 220px;
-            z-index: 10;
-        }
+    body {
+        --bg-color: var(--tg-theme-bg-color);
+        font: 0.75rem/1.5rem "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, Verdana, sans-serif;
+        background-color: var(--bg-color);
+        color: var(--tg-theme-text-color);
+        margin: 0;
+        padding: 0;
+        color-scheme: var(--tg-color-scheme);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+    }
 
-        #shopMenu {
-            background-color: #e3f2fd;
-        }
+    canvas {
+        border: 0.0625rem solid black;
+        background-color: #a67854;
+    }
 
-        #questMenu {
-            background-color: #fff3e0;
-        }
+    #menu {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+    }
+
+    #menu button {
+        padding: 0.625rem 1.25rem;
+        margin: 0.625rem;
+        font-size: 1.125rem;
+        cursor: pointer;
+        background-color: #d7b19d;
+        color: #4a3221;
+        border: none;
+        border-radius: 0.5rem;
+        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    #menu h2 {
+        margin-top: 0.625rem;
+        font-size: 1rem;
+        color: var(--tg-theme-hint-color);
+    }
+
+    #shopMenu, #questMenu {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        background-color: #cbb09b;
+        padding: 1.25rem;
+        border-radius: 0.625rem;
+        box-shadow: 0px 0px 0.625rem rgba(0, 0, 0, 0.1);
+        position: absolute;
+        left: auto;
+        right: auto;
+        width: 14rem;
+        z-index: 10;
+    }
+
+    #shopMenu {
+        background-color: #a47858;
+    }
+
+    #questMenu {
+        background-color: #deb887;
+    }
+
+    .shop-item, .quest-item {
+        margin: 0.3125rem;
+        padding: 0.625rem;
+        background-color: #fff;
+        border: 0.0625rem solid #4a3221;
+        cursor: pointer;
+        width: 12.5rem;
+        text-align: center;
+        border-radius: 0.5rem;
+        transition: background-color 0.2s ease;
+    }
+
+    .shop-item:hover, .quest-item:hover {
+        background-color: #e6c9ae;
+    }
+
+    .shop-item.disabled, .quest-item.disabled {
+        background-color: #d3c4b3;
+        cursor: not-allowed;
+    }
+
     </style>
 </head>
 

@@ -41,6 +41,22 @@
             font-size: 16px;
             color: var(--tg-theme-hint-color);
         }
+        #shopMenu {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+        .shop-item {
+            margin: 5px;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #000;
+            cursor: pointer;
+        }
+        .shop-item.disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 
@@ -50,6 +66,13 @@
         <h2 id="totalScoreDisplay">Total Score: 0</h2>
         <button id="startButton">Start Game</button>
         <button id="shopButton">Shop</button>
+    </div>
+    <div id="shopMenu">
+        <h1>Shop</h1>
+        <div class="shop-item" id="bird1" onclick="buyCharacter(1)">Character 1 (100 points)</div>
+        <div class="shop-item" id="bird2" onclick="buyCharacter(2)">Character 2 (200 points)</div>
+        <div class="shop-item" id="bird3" onclick="buyCharacter(3)">Character 3 (300 points)</div>
+        <button onclick="closeShop()">Close Shop</button>
     </div>
     <canvas id="FlapItLawinCanvas" width="320" height="480" style="display: none;"></canvas>
 
@@ -62,12 +85,12 @@
         const startButton = document.getElementById('startButton');
         const shopButton = document.getElementById('shopButton');
         const menu = document.getElementById('menu');
+        const shopMenu = document.getElementById('shopMenu');
         const totalScoreDisplay = document.getElementById('totalScoreDisplay');
         const gravity = 0.4;
         const flapPower = -8;
-        const birdImg = new Image();
+        let birdImg = new Image();
         birdImg.src = 'bird.png';
-
         let birdY = canvas.height / 2;
         let birdVelocity = 0;
         let birdFlap = false;
@@ -79,7 +102,7 @@
         let score = 0;
         let totalScore = parseInt(localStorage.getItem('totalScore')) || 0;
         let gameRunning = false;
-
+        let availableBirds = JSON.parse(localStorage.getItem('availableBirds')) || { 1: false, 2: false, 3: false };
         totalScoreDisplay.textContent = "Total Score: " + totalScore;
 
         const bird = {
@@ -140,7 +163,7 @@
         });
 
         shopButton.addEventListener('click', () => {
-            alert("Shop feature coming soon!");
+            openShop();
         });
 
         function startGame() {
@@ -191,6 +214,57 @@
             canvas.style.display = 'none';
             startButton.textContent = 'Restart Game';
         }
+
+        function openShop() {
+            menu.style.display = 'none';
+            shopMenu.style.display = 'flex';
+            updateShop();
+        }
+
+        function closeShop() {
+            shopMenu.style.display = 'none';
+            menu.style.display = 'flex';
+        }
+
+        function updateShop() {
+            for (let i = 1; i <= 3; i++) {
+                const item = document.getElementById('bird' + i);
+                if (availableBirds[i]) {
+                    item.classList.add('disabled');
+                    item.textContent = 'Character ' + i + ' (Already owned)';
+                } else {
+                    item.classList.remove('disabled');
+                    item.textContent = 'Character ' + i + ' (' + (i * 100) + ' points)';
+                }
+            }
+        }
+
+        function buyCharacter(characterId) {
+            const price = characterId * 100;
+            if (totalScore >= price && !availableBirds[characterId]) {
+                totalScore -= price;
+                availableBirds[characterId] = true;
+                localStorage.setItem('totalScore', totalScore);
+                localStorage.setItem('availableBirds', JSON.stringify(availableBirds));
+                updateShop();
+            } else {
+                alert("You don't have enough points or this character is already owned.");
+            }
+        }
+
+        // Commented out character switching functions
+        // function switchCharacter() {
+        //     if (availableBirds[1]) {
+        //         birdImg.src = 'bird1.png';
+        //     }
+        //     if (availableBirds[2]) {
+        //         birdImg.src = 'bird2.png';
+        //     }
+        //     if (availableBirds[3]) {
+        //         birdImg.src = 'bird3.png';
+        //     }
+        // }
+        // window.addEventListener('load', switchCharacter);
     </script>
 </body>
 </html>

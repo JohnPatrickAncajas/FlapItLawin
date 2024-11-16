@@ -247,6 +247,10 @@
             canvas.style.display = 'none';
             startButton.textContent = 'Restart Game';
         }
+        
+        function updateCoinsDisplay() {
+            totalScoreDisplay.textContent = "Coins: " + coins;
+        }
 
         function openShop() {
             shopMenu.style.display = 'flex';
@@ -277,11 +281,13 @@
                 localStorage.setItem('coins', coins);
                 localStorage.setItem('availableBirds', JSON.stringify(availableBirds));
                 updateShop();
+                updateCoinsDisplay();
                 alert(`Character ${birdId} bought!`);
             } else {
                 alert('Not enough coins!');
             }
         }
+
 
         const quests = [
             {

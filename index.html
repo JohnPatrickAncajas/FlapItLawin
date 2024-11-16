@@ -106,9 +106,12 @@
             };
             this.update = function() {
                 this.x -= 2;
+                this.x -= gameSpeed;
                 if (this.x + this.width < 0) {
                     pipes.shift();
                     score++;
+                    gameSpeed += 0.1;
+                    pipeGap = Math.max(100, pipeGap - 5);
                 }
             };
         }
@@ -129,6 +132,8 @@
             bird.y = canvas.height / 2;
             birdVelocity = 0;
             score = 0;
+            gameSpeed = 2;
+            pipeGap = 200;
             pipes = [];
             gameLoop();
         }

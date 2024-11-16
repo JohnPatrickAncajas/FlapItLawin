@@ -29,6 +29,10 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            position: relative;
+        }
+        #menu canvas {
+            margin-bottom: 20px;
         }
         #menu button {
             padding: 10px 20px;
@@ -41,8 +45,9 @@
 
 <body>
     <div id="menu">
-        <h1>Flap It</h1>
+        <canvas id="menuCanvas" width="320" height="480"></canvas>
         <button id="startButton">Start Game</button>
+        <button id="shopButton">Shop</button>
     </div>
     <canvas id="FlapItLawinCanvas" width="320" height="480" style="display: none;"></canvas>
 
@@ -50,18 +55,20 @@
     <script>
         Telegram.WebApp.ready();
 
-        const canvas = document.getElementById('FlapItLawinCanvas');
-        const ctx = canvas.getContext('2d');
+        const menuCanvas = document.getElementById('menuCanvas');
+        const menuCtx = menuCanvas.getContext('2d');
+        const gameCanvas = document.getElementById('FlapItLawinCanvas');
+        const gameCtx = gameCanvas.getContext('2d');
         const startButton = document.getElementById('startButton');
+        const shopButton = document.getElementById('shopButton');
         const menu = document.getElementById('menu');
         const gravity = 0.4;
         const flapPower = -8;
         const birdImg = new Image();
         birdImg.src = 'bird.png';
 
-        let birdY = canvas.height / 2;
+        let birdY = menuCanvas.height / 2;
         let birdVelocity = 0;
-        let birdFlap = false;
         let birdRadius = 20;
         let pipes = [];
         let pipeWidth = 40;
@@ -73,19 +80,15 @@
         const bird = {
             x: 50,
             y: birdY,
-            draw: function() {
+            draw: function(ctx) {
                 ctx.drawImage(birdImg, this.x - birdRadius, this.y - birdRadius, birdRadius * 2, birdRadius * 2);
             },
             update: function() {
-                if (birdFlap) {
-                    birdVelocity = flapPower;
-                    birdFlap = false;
-                }
                 birdVelocity += gravity;
                 this.y += birdVelocity;
 
-                if (this.y + birdRadius > canvas.height) {
-                    this.y = canvas.height - birdRadius;
+                if (this.y + birdRadius > menuCanvas.height) {
+                    this.y = menuCanvas.height - birdRadius;
                     birdVelocity = 0;
                 }
                 if (this.y - birdRadius < 0) {
@@ -95,45 +98,33 @@
             }
         };
 
-        function Pipe(x) {
-            this.x = x;
-            this.height = Math.floor(Math.random() * (canvas.height - pipeGap)) + 50;
-            this.width = pipeWidth;
-            this.draw = function() {
-                ctx.fillStyle = "#228B22";
-                ctx.fillRect(this.x, 0, this.width, this.height);
-                ctx.fillRect(this.x, this.height + pipeGap, this.width, canvas.height - this.height - pipeGap);
-            };
-            this.update = function() {
-                this.x -= 2;
-                this.x -= gameSpeed;
-                if (this.x + this.width < 0) {
-                    pipes.shift();
-                    score++;
-                    gameSpeed += 0.1;
-                    pipeGap = Math.max(100, pipeGap - 5);
-                }
-            };
+        function drawBackground(ctx) {
+            ctx.fillStyle = '#70c5ce';
+            ctx.fillRect(0, 0, menuCanvas.width, menuCanvas.height);
         }
 
-        document.addEventListener('click', function() {
-            if (!gameRunning) return;
-            birdFlap = true;
-        });
+        function menuLoop() {
+            drawBackground(menuCtx);
+            bird.update();
+            bird.draw(menuCtx);
+            requestAnimationFrame(menuLoop);
+        }
 
         startButton.addEventListener('click', () => {
             menu.style.display = 'none';
-            canvas.style.display = 'block';
+            gameCanvas.style.display = 'block';
             startGame();
+        });
+
+        shopButton.addEventListener('click', () => {
+            alert('Shop is under construction!');
         });
 
         function startGame() {
             gameRunning = true;
-            bird.y = canvas.height / 2;
+            bird.y = gameCanvas.height / 2;
             birdVelocity = 0;
             score = 0;
-            gameSpeed = 2;
-            pipeGap = 200;
             pipes = [];
             gameLoop();
         }
@@ -141,17 +132,17 @@
         function gameLoop() {
             if (!gameRunning) return;
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
             bird.update();
-            bird.draw();
+            bird.draw(gameCtx);
 
-            if (pipes.length === 0 || pipes[pipes.length - 1].x < canvas.width - pipeSpacing) {
-                pipes.push(new Pipe(canvas.width));
+            if (pipes.length === 0 || pipes[pipes.length - 1].x < gameCanvas.width - pipeSpacing) {
+                pipes.push(new Pipe(gameCanvas.width));
             }
 
             pipes.forEach(pipe => {
                 pipe.update();
-                pipe.draw();
+                pipe.draw(gameCtx);
                 if (pipe.x < bird.x + birdRadius && pipe.x + pipeWidth > bird.x - birdRadius) {
                     if (bird.y - birdRadius < pipe.height || bird.y + birdRadius > pipe.height + pipeGap) {
                         gameOver();
@@ -159,9 +150,9 @@
                 }
             });
 
-            ctx.fillStyle = "#000";
-            ctx.font = "20px Arial";
-            ctx.fillText("Score: " + score, 10, 30);
+            gameCtx.fillStyle = "#000";
+            gameCtx.font = "20px Arial";
+            gameCtx.fillText("Score: " + score, 10, 30);
 
             requestAnimationFrame(gameLoop);
         }
@@ -169,9 +160,11 @@
         function gameOver() {
             gameRunning = false;
             menu.style.display = 'flex';
-            canvas.style.display = 'none';
+            gameCanvas.style.display = 'none';
             startButton.textContent = 'Restart Game';
         }
+
+        menuLoop();
     </script>
 </body>
 </html>

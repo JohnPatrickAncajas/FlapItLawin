@@ -29,7 +29,6 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            position: relative;
         }
         #menu canvas {
             margin-bottom: 20px;
@@ -74,7 +73,6 @@
         let pipeWidth = 40;
         let pipeGap = 200;
         let pipeSpacing = 250;
-        let score = 0;
         let gameRunning = false;
 
         const bird = {
@@ -89,14 +87,30 @@
 
                 if (this.y + birdRadius > menuCanvas.height) {
                     this.y = menuCanvas.height - birdRadius;
-                    birdVelocity = 0;
+                    birdVelocity = -flapPower / 2;
                 }
                 if (this.y - birdRadius < 0) {
                     this.y = birdRadius;
-                    birdVelocity = 0;
+                    birdVelocity = flapPower / 2;
                 }
             }
         };
+
+        function Pipe(x) {
+            this.x = x;
+            this.height = Math.random() * (gameCanvas.height - pipeGap) + 50;
+            this.update = function() {
+                this.x -= 2;
+                if (this.x + pipeWidth < 0) {
+                    pipes.shift();
+                }
+            };
+            this.draw = function(ctx) {
+                ctx.fillStyle = '#228B22';
+                ctx.fillRect(this.x, 0, pipeWidth, this.height);
+                ctx.fillRect(this.x, this.height + pipeGap, pipeWidth, gameCanvas.height - this.height - pipeGap);
+            };
+        }
 
         function drawBackground(ctx) {
             ctx.fillStyle = '#70c5ce';
@@ -104,6 +118,7 @@
         }
 
         function menuLoop() {
+            if (menu.style.display === 'none') return;
             drawBackground(menuCtx);
             bird.update();
             bird.draw(menuCtx);
@@ -121,11 +136,10 @@
         });
 
         function startGame() {
-            gameRunning = true;
             bird.y = gameCanvas.height / 2;
             birdVelocity = 0;
-            score = 0;
             pipes = [];
+            gameRunning = true;
             gameLoop();
         }
 
@@ -145,23 +159,19 @@
                 pipe.draw(gameCtx);
                 if (pipe.x < bird.x + birdRadius && pipe.x + pipeWidth > bird.x - birdRadius) {
                     if (bird.y - birdRadius < pipe.height || bird.y + birdRadius > pipe.height + pipeGap) {
-                        gameOver();
+                        gameRunning = false;
+                        menu.style.display = 'flex';
+                        gameCanvas.style.display = 'none';
+                        startButton.textContent = 'Restart Game';
                     }
                 }
             });
 
             gameCtx.fillStyle = "#000";
             gameCtx.font = "20px Arial";
-            gameCtx.fillText("Score: " + score, 10, 30);
+            gameCtx.fillText("Score: " + pipes.length, 10, 30);
 
-            requestAnimationFrame(gameLoop);
-        }
-
-        function gameOver() {
-            gameRunning = false;
-            menu.style.display = 'flex';
-            gameCanvas.style.display = 'none';
-            startButton.textContent = 'Restart Game';
+            if (gameRunning) requestAnimationFrame(gameLoop);
         }
 
         menuLoop();

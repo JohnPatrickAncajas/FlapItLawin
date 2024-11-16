@@ -43,7 +43,6 @@
     <div id="menu">
         <h1>Flap It</h1>
         <button id="startButton">Start Game</button>
-        <button id="shopButton">Shop</button>
     </div>
     <canvas id="FlapItLawinCanvas" width="320" height="480" style="display: none;"></canvas>
 
@@ -54,12 +53,11 @@
         const canvas = document.getElementById('FlapItLawinCanvas');
         const ctx = canvas.getContext('2d');
         const startButton = document.getElementById('startButton');
-        const shopButton = document.getElementById('shopButton');
         const menu = document.getElementById('menu');
         const gravity = 0.4;
         const flapPower = -8;
         const birdImg = new Image();
-        birdImg.src = 'bird.jpg';
+        birdImg.src = 'bird.png';
 
         let birdY = canvas.height / 2;
         let birdVelocity = 0;
@@ -70,7 +68,6 @@
         let pipeGap = 200;
         let pipeSpacing = 250;
         let score = 0;
-        let gameSpeed = 2;
         let gameRunning = false;
 
         const bird = {
@@ -108,12 +105,10 @@
                 ctx.fillRect(this.x, this.height + pipeGap, this.width, canvas.height - this.height - pipeGap);
             };
             this.update = function() {
-                this.x -= gameSpeed;
+                this.x -= 2;
                 if (this.x + this.width < 0) {
                     pipes.shift();
                     score++;
-                    gameSpeed += 0.1;
-                    pipeGap = Math.max(100, pipeGap - 5);
                 }
             };
         }
@@ -129,17 +124,11 @@
             startGame();
         });
 
-        shopButton.addEventListener('click', () => {
-            alert("Shop is not implemented yet!");
-        });
-
         function startGame() {
             gameRunning = true;
             bird.y = canvas.height / 2;
             birdVelocity = 0;
             score = 0;
-            gameSpeed = 2;
-            pipeGap = 200;
             pipes = [];
             gameLoop();
         }

@@ -92,9 +92,9 @@
     </div>
     <div id="questMenu">
         <h1>Quest</h1>
-        <div class="quest-item" id="quest1" onclick="completeQuest(1)">Complete Quest 1 (50 coins)</div>
-        <div class="quest-item" id="quest2" onclick="completeQuest(2)">Complete Quest 2 (100 coins)</div>
-        <div class="quest-item" id="quest3" onclick="completeQuest(3)">Complete Quest 3 (150 coins)</div>
+        <div class="quest-item" id="quest1" onclick="completeQuest(1)">Complete Quest 1</div>
+        <div class="quest-item" id="quest2" onclick="completeQuest(2)">Complete Quest 2</div>
+        <div class="quest-item" id="quest3" onclick="completeQuest(3)">Complete Quest 3</div>
         <button onclick="closeQuest()">Close Quest</button>
     </div>
     <canvas id="FlapItLawinCanvas" width="320" height="480" style="display: none;"></canvas>
@@ -257,51 +257,83 @@
 
         function updateShop() {
             for (let i = 1; i <= 3; i++) {
-                const shopItem = document.getElementById('bird' + i);
+                const shopItem = document.getElementById(`bird${i}`);
                 if (availableBirds[i]) {
                     shopItem.classList.add('disabled');
-                    shopItem.innerHTML = `Character ${i} (Bought)`;
+                    shopItem.innerHTML = `Character ${i} - Purchased`;
                 } else {
                     shopItem.classList.remove('disabled');
+                    shopItem.innerHTML = `Character ${i} (${i * 100} coins)`;
                 }
             }
         }
 
-        function buyCharacter(characterId) {
-            const price = characterId * 100;
-            if (coins >= price && !availableBirds[characterId]) {
-                availableBirds[characterId] = true;
-                coins -= price;
+        function buyCharacter(birdId) {
+            if (coins >= birdId * 100) {
+                coins -= birdId * 100;
+                availableBirds[birdId] = true;
                 localStorage.setItem('coins', coins);
                 localStorage.setItem('availableBirds', JSON.stringify(availableBirds));
                 updateShop();
+                alert(`Character ${birdId} bought!`);
+            } else {
+                alert('Not enough coins!');
             }
         }
 
+        const quests = [
+            {
+                description: 'Complete 10 games',
+                reward: 50,
+                target: () => score >= 10,
+                type: 'target'
+            },
+            {
+                description: 'Achieve a score between 30 and 50',
+                reward: 100,
+                target: () => `${30} and ${50}`,
+                type: 'range'
+            },
+            {
+                description: 'Score 100 points',
+                reward: 200,
+                target: () => score >= 100,
+                type: 'finish'
+            }
+        ];
+
         function openQuest() {
             questMenu.style.display = 'flex';
+            const randomQuestIndex = Math.floor(Math.random() * quests.length);
+            const quest = quests[randomQuestIndex];
+            const questItem = document.getElementById(`quest${randomQuestIndex + 1}`);
+
+            questItem.innerHTML = `${quest.description} (Reward: ${quest.reward} coins)`;
+            questItem.onclick = function () {
+                completeQuest(quest);
+            };
+        }
+
+        function completeQuest(quest) {
+            let reward = quest.reward;
+            let message = '';
+
+            if (quest.type === 'target' && score >= quest.target() ||
+                quest.type === 'range' && score >= parseInt(quest.target().split(' and ')[0]) && score <= parseInt(quest.target().split(' and ')[1]) ||
+                quest.type === 'finish' && score >= 100) {
+
+                coins += reward;
+                localStorage.setItem('coins', coins);
+                message = `Quest completed! You earned ${reward} coins.`;
+            } else {
+                message = 'Quest not completed. Keep playing!';
+            }
+
+            alert(message);
         }
 
         function closeQuest() {
             questMenu.style.display = 'none';
-        }
-
-        function completeQuest(questId) {
-            let reward = 0;
-            switch (questId) {
-                case 1:
-                    reward = 50;
-                    break;
-                case 2:
-                    reward = 100;
-                    break;
-                case 3:
-                    reward = 150;
-                    break;
-            }
-            coins += reward;
-            localStorage.setItem('coins', coins);
-            alert(`Quest ${questId} completed! You earned ${reward} coins.`);
         }
     </script>
 </body>

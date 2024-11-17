@@ -179,21 +179,15 @@
                 }
             }
         };
-        let cliffImg = new Image();
-        cliffImg.src = 'cliffs.png';
 
         function Pipe(x) {
             this.x = x;
-            this.height = Math.floor(Math.random() * (canvas.height / 2)) + 50;
+            this.height = Math.floor(Math.random() * (canvas.height - pipeGap)) + 50;
             this.width = pipeWidth;
             this.draw = function() {
-                ctx.save();
-                ctx.translate(this.x + this.width / 2, this.height / 2);
-                ctx.scale(1, -1);
-                ctx.drawImage(cliffImg, -this.width / 2, -this.height, this.width, this.height);
-                ctx.restore();
-
-                ctx.drawImage(cliffImg, this.x, this.height + pipeGap, this.width, canvas.height - this.height - pipeGap);
+                ctx.fillStyle = "#8B4513";
+                ctx.fillRect(this.x, 0, this.width, this.height);
+                ctx.fillRect(this.x, this.height + pipeGap, this.width, canvas.height - this.height - pipeGap);
             };
             this.update = function() {
                 this.x -= 2;
@@ -207,7 +201,6 @@
                 }
             };
         }
-
 
 
         document.addEventListener('click', function() {

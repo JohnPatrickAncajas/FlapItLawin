@@ -96,16 +96,16 @@
         cursor: not-allowed;
     }
     #ton-connect {
-        margin: auto;
-        display: block;
+        position: relative;
+        top: 18rem;
     }
     </style>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 </head>
 
 <body>
-    <div id="ton-connect">Test</div>
-    
+    <div id="ton-connect"></div>
+
     <script>
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
             manifestUrl: 'https://flap-it-lawin.vercel.app/tonconnect-manifest.json',

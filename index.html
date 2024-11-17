@@ -95,7 +95,9 @@
         background-color: #d3c4b3;
         cursor: not-allowed;
     }
-
+    #ton-connect {
+        margin: auto;
+    }
     </style>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 </head>
@@ -112,11 +114,9 @@
     <script>
         async function connectToWallet() {
             const connectedWallet = await tonConnectUI.connectWallet();
-            // Do something with connectedWallet if needed
             console.log(connectedWallet);
         }
-    
-        // Call the function
+
         connectToWallet().catch(error => {
             console.error("Error connecting to wallet:", error);
             tonConnectUI.uiOptions = {

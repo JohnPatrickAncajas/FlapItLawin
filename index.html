@@ -97,9 +97,32 @@
     }
     #ton-connect {
         position: fixed;
-        bottom: 1rem;
+        bottom: 2rem;
         right: auto;
         left: auto;
+    }
+    .closeButton {
+        padding: 0.625rem 1.25rem;
+        margin: 0.625rem;
+        font-size: 1.125rem;
+        cursor: pointer;
+        background-color: #d7b19d;
+        color: #4a3221;
+        border: solid 0.1rem black;
+        border-radius: 0.5rem;
+        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+    }
+    #lawinIcon {
+        width: 40px;
+        height: 40px;
+        vertical-align: middle;
+        margin-right: 10px;
+    }
+    #coinIcon {
+        width: 20px;
+        height: 20px;
+        vertical-align: middle;
+        margin-right: 8px;
     }
     </style>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
@@ -128,8 +151,8 @@
         });
     </script>
     <div id="menu">
-        <h1>Flap It</h1>
-        <h2 id="totalScoreDisplay">Coins: 0</h2>
+        <h1><img src="lawin.png" alt="Lawin Icon" id="lawinIcon">Flap It!</h1>
+        <h2 id="totalScoreDisplay"><img src="coin.png" alt="Coin Icon" id="coinIcon">Coins: 0</h2>
         <button id="startButton">Start Game</button>
         <button id="shopButton">Shop</button>
         <button id="questButton">Quest</button>
@@ -139,14 +162,14 @@
         <div class="shop-item" id="bird1" onclick="buyCharacter(1)">Character 1 (100 coins)</div>
         <div class="shop-item" id="bird2" onclick="buyCharacter(2)">Character 2 (200 coins)</div>
         <div class="shop-item" id="bird3" onclick="buyCharacter(3)">Character 3 (300 coins)</div>
-        <button onclick="closeShop()">Close Shop</button>
+        <button onclick="closeShop()" class="closeButton">Close Shop</button>
     </div>
     <div id="questMenu">
         <h1>Quest</h1>
         <div class="quest-item" id="quest1" onclick="completeQuest(1)">Complete Quest 1</div>
         <div class="quest-item" id="quest2" onclick="completeQuest(2)">Complete Quest 2</div>
         <div class="quest-item" id="quest3" onclick="completeQuest(3)">Complete Quest 3</div>
-        <button onclick="closeQuest()">Close Quest</button>
+        <button onclick="closeQuest()" class="closeButton">Close Quest</button>
     </div>
     <canvas id="FlapItLawinCanvas" width="320" height="480" style="display: none;"></canvas>
 

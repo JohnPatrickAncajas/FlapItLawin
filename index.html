@@ -133,7 +133,7 @@
 
     <script>
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: 'https://flap-it-lawin.vercel.app/tonconnect-manifest.json',
+            manifestUrl: 'https://flap-it-lawin.vercel.app/assets/tonconnect-manifest.json',
             buttonRootId: 'ton-connect'
         });
     </script>
@@ -151,8 +151,8 @@
         });
     </script>
     <div id="menu">
-        <h1><img src="lawin.png" alt="Lawin Icon" id="lawinIcon">Flap It!</h1>
-        <h2 id="totalScoreDisplay"><img src="coin.png" alt="Coin Icon" id="coinIcon">Coins: 0</h2>
+        <h1><img src="assets/lawin.png" alt="Lawin Icon" id="lawinIcon">Flap It!</h1>
+        <h2 id="totalScoreDisplay"><img src="assets/coin.png" alt="Coin Icon" id="coinIcon">Coins: 0</h2>
         <button id="startButton">Start Game</button>
         <button id="shopButton">Shop</button>
         <button id="questButton">Quest</button>
@@ -189,7 +189,7 @@
         const gravity = 0.4;
         const flapPower = -8;
         let birdImg = new Image();
-        birdImg.src = 'bird.png';
+        birdImg.src = 'assets/bird.png';
         let birdY = canvas.height / 2;
         let birdVelocity = 0;
         let birdFlap = false;

@@ -189,7 +189,7 @@ function updateShop() {
             shopItem.innerHTML = `Character ${i} - Purchased`;
         } else {
             shopItem.classList.remove('disabled');
-            shopItem.innerHTML = `Character ${i}<br>(${i * 100} coins)`;
+            shopItem.innerHTML = `Character ${i}<br>Price: ${i * 100} coins`;
         }
     }
 }
@@ -264,7 +264,7 @@ function updateQuest() {
         const questItem = document.getElementById(id);
         if (questItem) {
             const quest = quests[index];
-            questItem.innerHTML = `${quest.description}<br>(Reward: ${quest.reward} coins)`;
+            questItem.innerHTML = `${quest.description}<br>Reward: ${quest.reward} coins`;
             questItem.onclick = function () {
                 completeQuest(quest);
             };
@@ -290,9 +290,10 @@ function completeQuest(quest) {
 
     updateCoinsDisplay();
     alert(message);
+    updateQuest();
 }
 
 function closeQuest() {
     questMenu.style.display = 'none';
-    questMenu.innerHTML = '';
+    updateQuest();
 }

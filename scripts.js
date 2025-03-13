@@ -30,6 +30,8 @@ const gravity = 0.4;
 const flapPower = -8;
 let birdImg = new Image();
 birdImg.src = 'assets/bird.png';
+let cliffImg = new Image();
+cliffImg.src = 'assets/cliffs.png';
 let birdY = canvas.height / 2;
 let birdVelocity = 0;
 let birdFlap = false;
@@ -75,13 +77,18 @@ function Pipe(x) {
     this.height = Math.floor(Math.random() * (canvas.height - pipeGap)) + 50;
     this.width = pipeWidth;
     this.draw = function() {
-        ctx.fillStyle = "#8B4513";
-        ctx.fillRect(this.x, 0, this.width, this.height);
-        ctx.fillRect(this.x, this.height + pipeGap, this.width, canvas.height - this.height - pipeGap);
+        // Draw the bottom cliff
+        ctx.drawImage(cliffImg, this.x, this.height + pipeGap, this.width, canvas.height - this.height - pipeGap);
+
+        // Draw the top cliff inverted
+        ctx.save();
+        ctx.translate(this.x + this.width / 2, this.height / 2);
+        ctx.scale(1, -1);
+        ctx.drawImage(cliffImg, -this.width / 2, -this.height / 2, this.width, this.height);
+        ctx.restore();
     };
     this.update = function() {
         this.x -= 2;
-        this.x -= gameSpeed;
         if (this.x + this.width < 0) {
             pipes.shift();
             score++;

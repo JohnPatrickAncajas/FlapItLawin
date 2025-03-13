@@ -147,3 +147,10 @@ canvas {
     vertical-align: middle;
     margin-right: 8px;
 }
+
+.shopCoinIcon {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    margin-left: 5px;
+}

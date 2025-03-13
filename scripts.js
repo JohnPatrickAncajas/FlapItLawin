@@ -45,13 +45,18 @@ let coins = parseInt(localStorage.getItem('coins')) || 0;
 let gameRunning = false;
 let availableBirds = JSON.parse(localStorage.getItem('availableBirds')) || { 1: false, 2: false, 3: false };
 
-totalScoreDisplay.textContent = "Coins: " + coins;
+totalScoreDisplay.innerHTML = `${coins} <img src="assets/coin.png" alt="Coin Icon" id="coinIcon">`;
 
 const bird = {
     x: 50,
     y: birdY,
     draw: function() {
-        ctx.drawImage(birdImg, this.x - birdRadius, this.y - birdRadius, birdRadius * 2, birdRadius * 2);
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        let angle = Math.atan2(birdVelocity, 10);
+        ctx.rotate(angle);
+        ctx.drawImage(birdImg, -birdRadius, -birdRadius, birdRadius * 2, birdRadius * 2);
+        ctx.restore();
     },
     update: function() {
         if (birdFlap) {
@@ -78,7 +83,6 @@ function Pipe(x) {
     this.width = pipeWidth;
     this.draw = function() {
         ctx.drawImage(cliffImg, this.x, this.height + pipeGap, this.width, canvas.height - this.height - pipeGap);
-
         ctx.save();
         ctx.translate(this.x + this.width / 2, this.height / 2);
         ctx.scale(1, -1);
@@ -90,7 +94,6 @@ function Pipe(x) {
         if (this.x + this.width < 0) {
             pipes.shift();
             score++;
-            coins++;
             gameSpeed += 0.1;
             pipeGap = Math.max(100, pipeGap - 5);
         }
@@ -121,7 +124,6 @@ function startGame() {
     bird.y = canvas.height / 2;
     birdVelocity = 0;
     score = 0;
-    coins = parseInt(localStorage.getItem('coins')) || coins;
     gameSpeed = 2;
     pipeGap = 200;
     pipes = [];
@@ -151,22 +153,23 @@ function gameLoop() {
 
     ctx.fillStyle = "#000";
     ctx.font = "20px Arial";
-    ctx.fillText("Coins: " + coins, 10, 30);
+    ctx.fillText(`Points: ${score}`, 10, 30);
 
     requestAnimationFrame(gameLoop);
 }
 
 function gameOver() {
     gameRunning = false;
+    coins += score;
     localStorage.setItem('coins', coins);
-    totalScoreDisplay.textContent = "Coins: " + coins;
+    totalScoreDisplay.innerHTML = `${coins} <img src="assets/coin.png" alt="Coin Icon" id="coinIcon">`;
     menu.style.display = 'flex';
     canvas.style.display = 'none';
     startButton.textContent = 'Restart Game';
 }
 
 function updateCoinsDisplay() {
-    totalScoreDisplay.textContent = "Coins: " + coins;
+    totalScoreDisplay.innerHTML = `${coins} <img src="assets/coin.png" alt="Coin Icon" id="coinIcon">`;
 }
 
 function openShop() {
@@ -253,19 +256,38 @@ const quests = [
         reward: 250,
         target: () => gameCoins >= 100,
         type: 'target'
+    },
+    {
+        description: 'Fly through 50 pipes',
+        reward: 100,
+        target: () => pipesPassed >= 50,
+        type: 'target'
+    },
+    {
+        description: 'Play 5 games in a row without dying',
+        reward: 300,
+        target: () => consecutiveGames >= 5,
+        type: 'target'
     }
 ];
 
 function openQuest() {
     questMenu.style.display = 'flex';
-    const randomQuestIndex = Math.floor(Math.random() * quests.length);
-    const quest = quests[randomQuestIndex];
-    const questItem = document.getElementById(`quest${randomQuestIndex + 1}`);
+    updateQuest();
+}
 
-    questItem.innerHTML = `${quest.description} (Reward: ${quest.reward} coins)`;
-    questItem.onclick = function () {
-        completeQuest(quest);
-    };
+function updateQuest() {
+    const questElements = ['quest1', 'quest2', 'quest3'];
+    questElements.forEach((id, index) => {
+        const questItem = document.getElementById(id);
+        if (questItem) {
+            const quest = quests[index];
+            questItem.innerHTML = `${quest.description} (Reward: ${quest.reward} coins)`;
+            questItem.onclick = function () {
+                completeQuest(quest);
+            };
+        }
+    });
 }
 
 function completeQuest(quest) {
@@ -290,4 +312,5 @@ function completeQuest(quest) {
 
 function closeQuest() {
     questMenu.style.display = 'none';
+    questMenu.innerHTML = '';
 }

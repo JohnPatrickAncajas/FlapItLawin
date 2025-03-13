@@ -152,7 +152,7 @@ function gameLoop() {
     });
 
     ctx.fillStyle = "#000";
-    ctx.font = "20px Arial";
+    ctx.font = "20px Comic Sans MS";
     ctx.fillText(`Points: ${score}`, 10, 30);
 
     requestAnimationFrame(gameLoop);
@@ -189,7 +189,7 @@ function updateShop() {
             shopItem.innerHTML = `Character ${i} - Purchased`;
         } else {
             shopItem.classList.remove('disabled');
-            shopItem.innerHTML = `Character ${i} (${i * 100} coins)`;
+            shopItem.innerHTML = `Character ${i}<br>(${i * 100} coins)`;
         }
     }
 }
@@ -234,18 +234,6 @@ const quests = [
         type: 'target'
     },
     {
-        description: 'Play for 30 minutes',
-        reward: 150,
-        target: () => playTime >= 1800,
-        type: 'time'
-    },
-    {
-        description: 'Avoid obstacles for 5 minutes',
-        reward: 200,
-        target: () => avoidTime >= 300,
-        type: 'time'
-    },
-    {
         description: 'Reach a score of 200',
         reward: 400,
         target: () => score >= 200,
@@ -263,12 +251,6 @@ const quests = [
         target: () => pipesPassed >= 50,
         type: 'target'
     },
-    {
-        description: 'Play 5 games in a row without dying',
-        reward: 300,
-        target: () => consecutiveGames >= 5,
-        type: 'target'
-    }
 ];
 
 function openQuest() {
@@ -282,7 +264,7 @@ function updateQuest() {
         const questItem = document.getElementById(id);
         if (questItem) {
             const quest = quests[index];
-            questItem.innerHTML = `${quest.description} (Reward: ${quest.reward} coins)`;
+            questItem.innerHTML = `${quest.description}<br>(Reward: ${quest.reward} coins)`;
             questItem.onclick = function () {
                 completeQuest(quest);
             };

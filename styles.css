@@ -1,6 +1,6 @@
 body {
     --bg-color: var(--tg-theme-bg-color);
-    font: 0.75rem/1.5rem "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, Verdana, sans-serif;
+    font: 0.75rem/1.5rem "Comic Sans MS", "Comic Sans", cursive;
     background-color: var(--bg-color);
     color: var(--tg-theme-text-color);
     margin: 0;

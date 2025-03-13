@@ -34,6 +34,10 @@ canvas {
     align-items: center;
     justify-content: center;
     position: absolute;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
 #menu button {
@@ -41,11 +45,17 @@ canvas {
     margin: 0.625rem;
     font-size: 1.125rem;
     cursor: pointer;
-    background-color: #d7b19d;
-    color: #4a3221;
+    background-color: #87CEEB;
+    color: #ffffff;
     border: none;
     border-radius: 0.5rem;
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+#menu button:hover {
+    background-color: #B0E0E6;
+    transform: scale(1.05);
 }
 
 #menu h2 {
@@ -58,10 +68,10 @@ canvas {
     display: none;
     flex-direction: column;
     align-items: center;
-    background-color: #cbb09b;
+    background-color: rgba(255, 255, 255, 0.9);
     padding: 1.25rem;
     border-radius: 0.625rem;
-    box-shadow: 0px 0px 0.625rem rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     position: absolute;
     left: auto;
     right: auto;
@@ -70,56 +80,67 @@ canvas {
 }
 
 #shopMenu {
-    background-color: #a47858;
+    background-color: rgba(135, 206, 235, 0.9);
 }
 
 #questMenu {
-    background-color: #deb887;
+    background-color: rgba(173, 216, 230, 0.9);
 }
 
 .shop-item, .quest-item {
     margin: 0.3125rem;
     padding: 0.625rem;
-    background-color: #fff;
+    background-color: #ffffff;
     border: 0.0625rem solid #4a3221;
     cursor: pointer;
     width: 12.5rem;
     text-align: center;
     border-radius: 0.5rem;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .shop-item:hover, .quest-item:hover {
-    background-color: #e6c9ae;
+    background-color: #B0E0E6;
+    transform: scale(1.05);
 }
 
 .shop-item.disabled, .quest-item.disabled {
     background-color: #d3c4b3;
     cursor: not-allowed;
 }
+
 #ton-connect {
     position: fixed;
     bottom: 2rem;
     right: auto;
     left: auto;
 }
+
 .closeButton {
     padding: 0.625rem 1.25rem;
     margin: 0.625rem;
     font-size: 1.125rem;
     cursor: pointer;
-    background-color: #d7b19d;
-    color: #4a3221;
+    background-color: #87CEEB;
+    color: #ffffff;
     border: solid 0.1rem black;
     border-radius: 0.5rem;
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s ease, transform 0.2s ease;
 }
+
+.closeButton:hover {
+    background-color: #B0E0E6;
+    transform: scale(1.05);
+}
+
 #lawinIcon {
     width: 40px;
     height: 40px;
     vertical-align: middle;
     margin-right: 10px;
 }
+
 #coinIcon {
     width: 40px;
     height: 40px;

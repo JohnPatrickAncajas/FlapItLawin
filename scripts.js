@@ -77,10 +77,8 @@ function Pipe(x) {
     this.height = Math.floor(Math.random() * (canvas.height - pipeGap)) + 50;
     this.width = pipeWidth;
     this.draw = function() {
-        // Draw the bottom cliff
         ctx.drawImage(cliffImg, this.x, this.height + pipeGap, this.width, canvas.height - this.height - pipeGap);
 
-        // Draw the top cliff inverted
         ctx.save();
         ctx.translate(this.x + this.width / 2, this.height / 2);
         ctx.scale(1, -1);
@@ -225,6 +223,36 @@ const quests = [
         reward: 200,
         target: () => score >= 100,
         type: 'finish'
+    },
+    {
+        description: 'Collect 500 coins',
+        reward: 300,
+        target: () => coins >= 500,
+        type: 'target'
+    },
+    {
+        description: 'Play for 30 minutes',
+        reward: 150,
+        target: () => playTime >= 1800,
+        type: 'time'
+    },
+    {
+        description: 'Avoid obstacles for 5 minutes',
+        reward: 200,
+        target: () => avoidTime >= 300,
+        type: 'time'
+    },
+    {
+        description: 'Reach a score of 200',
+        reward: 400,
+        target: () => score >= 200,
+        type: 'finish'
+    },
+    {
+        description: 'Collect 100 coins in one game',
+        reward: 250,
+        target: () => gameCoins >= 100,
+        type: 'target'
     }
 ];
 
@@ -244,9 +272,10 @@ function completeQuest(quest) {
     let reward = quest.reward;
     let message = '';
 
-    if (quest.type === 'target' && score >= quest.target() ||
+    if (quest.type === 'target' && quest.target() ||
         quest.type === 'range' && score >= parseInt(quest.target().split(' and ')[0]) && score <= parseInt(quest.target().split(' and ')[1]) ||
-        quest.type === 'finish' && score >= 100) {
+        quest.type === 'finish' && quest.target() ||
+        quest.type === 'time' && quest.target()) {
 
         coins += reward;
         localStorage.setItem('coins', coins);
